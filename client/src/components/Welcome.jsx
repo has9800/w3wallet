@@ -40,10 +40,10 @@ const Welcome = () => {
             <div className="flex flex-col mf:flex-row items-start justify-between md:p-20 py-12 px-4">
 
                 <div className="flex flex-1 justify-start flex-col mf:mr-10">
-                    <h1 className="text-center md:text-left text-5xl text-white text-gradient py-1">
+                    <h1 className="text-left text-5xl text-white text-gradient py-1">
                         Send crypto <br /> across the world
                     </h1>
-                    <p className="text-center md:text-left mt-5 text-white font-light md:w-9/12 w-11/12 text-base">
+                    <p className="text-left mt-5 text-white font-light md:w-9/12 w-11/12 text-base">
                         Explore the crypto world, buy and sell cryptocurrencies on Qrypt
                     </p>
                     <button
