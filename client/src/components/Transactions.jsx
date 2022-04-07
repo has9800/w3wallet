@@ -23,14 +23,14 @@ const TransactionCard = ({
         const gifUrl = useFetch({ keyword });
 
         return (
-            <div className="blue-glassmorphism ring-1 m-4 flex flex-1
+            <div className="blue-glassmorphism ring-1 hover:ring-4 m-4 flex flex-1
             2xl:min-w-[450px]
             2xl:max-w-[500px]
             sm:min-w-[270px]
             sm:max-w-[300px]
-            flex-col p-3 rounded-md hover:cursor-pointer hover:shadow-2xl hover:scale-95 hover:transition duration-200 ease-in-out
+            flex-col p-3 rounded-md hover:cursor-pointer hover:shadow-2xl hover:scale-95 hover:transition duration-200 ease-out
             ">
-                <div className="flex flex-col items-center w-full mt-3">
+                <div className="flex flex-col items-center w-full mt-3" onClick={() => window.open(`https://ropsten.etherscan.io/address/${addressTo}`)}>
                     <div className="w-full mb-6 p-2">
                         <a href={`https://ropsten.etherscan.io/address/${addressFrom}`}
                         target="_blank" rel="noopener noreferrer"
@@ -46,7 +46,7 @@ const TransactionCard = ({
                         {message && (
                             <>
                                 <br />
-                                <p className="text-white text-base">Message: {message}</p>
+                                <p className="text-white text-base font-bold">Message: <span className="font-thin">{message}</span></p>
                             </>
                         )}
                     </div>
@@ -60,7 +60,7 @@ const TransactionCard = ({
 }
 
 const Transactions = () => {
-    const { currentAccount } = useContext(TransactionContext);
+    const { currentAccount, transactions } = useContext(TransactionContext);
 
     return (
         <div className="flex w-full justify-center items-center 2xl:px-20 gradient-bg-transactions">
@@ -72,7 +72,7 @@ const Transactions = () => {
                 )}
 
                 <div className="flex flex-wrap justify-center items-center mt-10">
-                    {testData.reverse().map((transaction, i) => (
+                    {transactions.reverse().map((transaction, i) => (
                         <TransactionCard key={i} {...transaction} />
                     ))}
                 </div>

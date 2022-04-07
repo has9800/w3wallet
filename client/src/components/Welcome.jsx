@@ -36,7 +36,8 @@ const Welcome = () => {
         currentAccount, 
         formData, 
         handleChange,
-        sendTransaction 
+        sendTransaction,
+        isLoading
     } = useContext(TransactionContext)
 
     // handle mutations on form and send up to context provider
@@ -66,8 +67,8 @@ const Welcome = () => {
                     {/* if account isn't connected, show connect wallet btn */}
                     {currentAccount ? (
                         <div className="flex flex-row items-start my-4">
-                            <p className="mr-1">Status:</p>
-                            <p className="text-green-400">connected</p>
+                            <p className="mr-1 text-sm font-thin">Status:</p>
+                            <p className="text-green-400 text-sm font-bold">connected</p>
                         </div>
                     ) : (
                             <button
@@ -100,8 +101,8 @@ const Welcome = () => {
                                 <BsInfoCircle fontSize={17} color="#000" /> 
                             </div>
                             <div>
-                                <p className="text-black font-medium text-sm">
-                                    {shortenAddress(currentAccount)}
+                                <p className="text-black font-light text-sm">
+                                    {currentAccount ? shortenAddress(currentAccount) : " Your Address Here"}
                                 </p>
                                 <p className="text-black font-semibold text-lg my-1">
                                     Ethereum
@@ -119,7 +120,7 @@ const Welcome = () => {
                         <div className="h-[1px] w-full bg-gray-400 my-5" />
 
                         {/* show loader if transaction pending or show send transaction btn */}
-                        {false ? (
+                        {isLoading ? (
                             <Loader />
                         ) : (
                             <button 
