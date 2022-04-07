@@ -9,6 +9,9 @@ import { BsInfoCircle } from 'react-icons/bs'
 // loader component
 import { Loader } from "./"
 
+// shorten eth address util function
+import { shortenAddress } from "../utils/shortenAddress"
+
 // common styles for grid's dynamic class
 const commonStyles = "min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white";
 
@@ -33,7 +36,8 @@ const Welcome = () => {
         currentAccount, 
         formData, 
         handleChange,
-        sendTransaction 
+        sendTransaction,
+        isLoading
     } = useContext(TransactionContext)
 
     // handle mutations on form and send up to context provider
@@ -61,7 +65,12 @@ const Welcome = () => {
                     </p>
 
                     {/* if account isn't connected, show connect wallet btn */}
-                    {!currentAccount && (
+                    {currentAccount ? (
+                        <div className="flex flex-row items-start my-4">
+                            <p className="mr-1 text-sm font-thin">Status:</p>
+                            <p className="text-green-400 text-sm font-bold">connected</p>
+                        </div>
+                    ) : (
                             <button
                                 type="button" onClick={connectWallet}
                                 className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer
@@ -83,7 +92,7 @@ const Welcome = () => {
                 </div>
 
                 <div className="flex flex-col flex-1 items-center justify-start w-full mf:mt-0 mt-10">
-                    <div className="p-3 justify-end items-start flex-col rounded-xl h-60 md:h-40 sm:w-72 w-full my-5 eth-card white-glassmorphism">
+                    <div className="p-3 justify-end items-start flex-col rounded-xl h-60 md:h-40 sm:w-72 w-full my-5 eth-card white-glassmorphism hover:scale-95 hover:transition duration-200 ease-out">
                         <div className="flex justify-between flex-col w-full h-full">
                             <div className="flex justify-between items-start">
                                 <div className="w-10 h-10 rounded-full border-2 border-black flex justify-center items-center">
@@ -92,8 +101,8 @@ const Welcome = () => {
                                 <BsInfoCircle fontSize={17} color="#000" /> 
                             </div>
                             <div>
-                                <p className="text-black font-medium text-sm">
-                                    0xajknsxc...ds394jk
+                                <p className="text-black font-light text-sm">
+                                    {currentAccount ? shortenAddress(currentAccount) : " Your Address Here"}
                                 </p>
                                 <p className="text-black font-semibold text-lg my-1">
                                     Ethereum
@@ -111,7 +120,7 @@ const Welcome = () => {
                         <div className="h-[1px] w-full bg-gray-400 my-5" />
 
                         {/* show loader if transaction pending or show send transaction btn */}
-                        {false ? (
+                        {isLoading ? (
                             <Loader />
                         ) : (
                             <button 

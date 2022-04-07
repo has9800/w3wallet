@@ -37,9 +37,36 @@ export const TransactionProvider = ({ children }) => {
     // tx count state
     const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'))
 
+    // transaction list to use in TransactionCard to list
+    const [transactions, setTransactions] = useState([]);
+
     // handle form inputs to dynamically change state
     const handleChange = (e, name) => {
         setFormData((prevState) => ({...prevState, [name]: e.target.value}))
+    }
+
+    const getAllTransactions = async () => {
+        try {
+            if(!ethereum) return alert("Please install MetaMask extension to connect to the Ethereum Blockchain and send transcactions. Close this pop-up to continue");
+            const transactionContract = getEthereumContract();
+            const availableTransactions = await transactionContract.getAllTransactions();
+            console.log(availableTransactions)
+
+            // structure transactions to access on window easier and display on TransactionCard component
+            const structuredTransactions = availableTransactions.map((transaction) => ({
+                addressFrom: transaction.sender,
+                addressTo: transaction.receiver,
+                timestamp: new Date(transaction.timestamp.toNumber() * 1000).toLocaleString(),
+                message: transaction.message,
+                keyword: transaction.keyword,
+                amount: parseInt(transaction.amount._hex / (10 ** 18)) // values in eth are in hex, convert back
+            }))
+
+            setTransactions(structuredTransactions)
+            console.log(structuredTransactions)
+        } catch (error) {
+            console.log(error)
+        }
     }
  
     // check if ethereum obj provided by MetaMask is present
@@ -51,13 +78,25 @@ export const TransactionProvider = ({ children }) => {
             // if account is present, set `currentAccount` state
             if(accounts.length) {
                 setCurrentAccount(accounts[0])
-                // getAllTransactions();
+                getAllTransactions();
             } else {
                 console.log('No Accounts Found!');
             }
         } catch (error) {
             console.log(error)
             alert("Could not connect wallet")
+            throw new Error("No Ethereum Object found")
+        }
+    }
+
+    // check if transactions exist
+    const existingTransactions = async () => {
+        try {
+            const transactionContract = getEthereumContract();
+            const transActionCount = await transactionContract.getTransactionCount();
+
+            window.localStorage.setItem('transactionCount', transActionCount)
+        } catch (error) {
             throw new Error("No Ethereum Object found")
         }
     }
@@ -117,6 +156,8 @@ export const TransactionProvider = ({ children }) => {
             const transActionCount = await transactionContract.getTransactionCount();
             setTransactionCount(transActionCount.toNumber())
 
+            // reload the page when transaction is complete
+            window.reload();
         } catch (error) {
             console.log(error)
             throw new Error("No Ethereum Object found")
@@ -126,6 +167,7 @@ export const TransactionProvider = ({ children }) => {
     // call isWalletConnected function onMount
     useEffect(() => {
         isWalletConnected();
+        existingTransactions();
     }, [])
 
     return (
@@ -135,7 +177,9 @@ export const TransactionProvider = ({ children }) => {
             formData, 
             setFormData, 
             handleChange, 
-            sendTransaction 
+            sendTransaction,
+            transactions,
+            isLoading
             }}>
             {children}
         </TransactionContext.Provider>
