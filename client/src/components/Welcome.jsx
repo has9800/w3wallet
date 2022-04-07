@@ -1,17 +1,18 @@
+import { useContext } from "react"
+import { TransactionContext } from "../context/TransactionContext"
+
+// icons
 import { AiFillPlayCircle  } from "react-icons/ai"
 import { SiEthereum } from 'react-icons/si'
 import { BsInfoCircle } from 'react-icons/bs'
  
+// loader component
 import { Loader } from "./"
 
 // common styles for grid's dynamic class
 const commonStyles = "min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white";
 
 const Input = ({ placeholder, name, type, value, handleChange }) => {
-    // const handleChange = () => {
-
-    // }
-
     return (
         <input 
             placeholder={placeholder}
@@ -19,20 +20,32 @@ const Input = ({ placeholder, name, type, value, handleChange }) => {
             type={type}
             step={0.0001}
             value={value}
-            // onChange={() => handleChange(e, name)}
+            onChange={(e) => handleChange(e, name)}
             className="my-2 w-full rounded-sm p-2 outline-none bg-transparent text-white border-none text-sm white-glassmorphism"
         />
     )
 }
 
 const Welcome = () => {
-    // connect to metamask wallet
-    const connectWallet = () => {
+    // pull data from context provider
+    const { 
+        connectWallet, 
+        currentAccount, 
+        formData, 
+        handleChange,
+        sendTransaction 
+    } = useContext(TransactionContext)
 
-    }
+    // handle mutations on form and send up to context provider
+    const handleSubmit = e => {
+        e.preventDefault();
+        const { addressTo, amount, keyword, message } = formData;
 
-    const handleSubmit = () => {
+        // chck if fields are empty
+        if(!addressTo || !amount || !keyword || !message) return;
 
+        // send tx to smart contract
+        sendTransaction();
     }
 
     return (
@@ -46,13 +59,19 @@ const Welcome = () => {
                     <p className="text-left mt-5 text-white font-light md:w-9/12 w-11/12 text-base">
                         Explore the crypto world, buy and sell cryptocurrencies on Qrypt
                     </p>
-                    <button
-                     type="button" onClick={connectWallet}
-                     className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer
-                     hover:bg-[#2546bd] hover:transition duration-200 ease-out"
-                     >
-                    <p className="text-white text-base font-semibold">Connect Wallet</p>
-                    </button>
+
+                    {/* if account isn't connected, show connect wallet btn */}
+                    {!currentAccount && (
+                            <button
+                                type="button" onClick={connectWallet}
+                                className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer
+                                hover:bg-[#2546bd] hover:transition duration-200 ease-out"
+                                >
+                                <p className="text-white text-base font-semibold">Connect Wallet</p>
+                            </button>
+                        )
+                    }
+
                     <div className="grid sm:grid-cols-3 grid-cols-2 w-full mt-10">
                         <div className={`rounded-tl-2xl ${commonStyles}`}>Reliability</div>
                         <div className={`rounded-tr-2xl sm:rounded-tr-none ${commonStyles}`}>Security </div>
@@ -84,14 +103,14 @@ const Welcome = () => {
                     </div>
 
                     <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
-                        {/* missing handleChange() */}
-                        <Input placeholder="Address to" name="addressTo" type="text"  />
-                        <Input placeholder="Amount ETH" name="amount" type="number"   />
-                        <Input placeholder="Keyword GIF" name="keyword" type="text"   />
-                        <Input placeholder="Message" name="message" type="text"   />
+                        <Input placeholder="Address to" name="addressTo" type="text" handleChange={handleChange} />
+                        <Input placeholder="Amount ETH" name="amount" type="number" handleChange={handleChange}  />
+                        <Input placeholder="Keyword GIF" name="keyword" type="text" handleChange={handleChange}  />
+                        <Input placeholder="Message" name="message" type="text"  handleChange={handleChange} />
 
                         <div className="h-[1px] w-full bg-gray-400 my-5" />
 
+                        {/* show loader if transaction pending or show send transaction btn */}
                         {false ? (
                             <Loader />
                         ) : (
@@ -101,7 +120,6 @@ const Welcome = () => {
                             className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] rounded-full cursor-pointer hover:bg-[#2952e3] hover:border-[#2952e3] hover:transition duration-200 ease-out"
                             >Send now</button>
                         )}
-
                     </div>
 
                 </div>
