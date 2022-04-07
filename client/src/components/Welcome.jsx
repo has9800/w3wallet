@@ -13,10 +13,6 @@ import { Loader } from "./"
 const commonStyles = "min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white";
 
 const Input = ({ placeholder, name, type, value, handleChange }) => {
-    // const handleChange = () => {
-
-    // }
-
     return (
         <input 
             placeholder={placeholder}
@@ -24,17 +20,32 @@ const Input = ({ placeholder, name, type, value, handleChange }) => {
             type={type}
             step={0.0001}
             value={value}
-            // onChange={() => handleChange(e, name)}
+            onChange={(e) => handleChange(e, name)}
             className="my-2 w-full rounded-sm p-2 outline-none bg-transparent text-white border-none text-sm white-glassmorphism"
         />
     )
 }
 
 const Welcome = () => {
-    const { connectWallet, currentAccount } = useContext(TransactionContext)
+    // pull data from context provider
+    const { 
+        connectWallet, 
+        currentAccount, 
+        formData, 
+        handleChange,
+        sendTransaction 
+    } = useContext(TransactionContext)
 
-    const handleSubmit = () => {
+    // handle mutations on form and send up to context provider
+    const handleSubmit = e => {
+        e.preventDefault();
+        const { addressTo, amount, keyword, message } = formData;
 
+        // chck if fields are empty
+        if(!addressTo || !amount || !keyword || !message) return;
+
+        // send tx to smart contract
+        sendTransaction();
     }
 
     return (
@@ -92,11 +103,10 @@ const Welcome = () => {
                     </div>
 
                     <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
-                        {/* missing handleChange() funcs here */}
-                        <Input placeholder="Address to" name="addressTo" type="text"  />
-                        <Input placeholder="Amount ETH" name="amount" type="number"   />
-                        <Input placeholder="Keyword GIF" name="keyword" type="text"   />
-                        <Input placeholder="Message" name="message" type="text"   />
+                        <Input placeholder="Address to" name="addressTo" type="text" handleChange={handleChange} />
+                        <Input placeholder="Amount ETH" name="amount" type="number" handleChange={handleChange}  />
+                        <Input placeholder="Keyword GIF" name="keyword" type="text" handleChange={handleChange}  />
+                        <Input placeholder="Message" name="message" type="text"  handleChange={handleChange} />
 
                         <div className="h-[1px] w-full bg-gray-400 my-5" />
 
