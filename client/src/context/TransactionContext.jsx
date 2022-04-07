@@ -19,8 +19,10 @@ const getEthereumContract = () => {
 
 // context provider
 export const TransactionProvider = ({ children }) => {
+    // <<<--------STATE----------
     // account state
     const [currentAccount, setCurrentAccount] = useState('');
+
     // form submission state
     const [formData, setFormData] = useState({
         addressTo: '',
@@ -28,6 +30,12 @@ export const TransactionProvider = ({ children }) => {
         keyword: '',
         message: ''
     })
+
+    // loading state
+    const [isLoading, setIsLoading] = useState(false);
+
+    // tx count state
+    const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'))
 
     // handle form inputs to dynamically change state
     const handleChange = (e, name) => {
@@ -69,7 +77,7 @@ export const TransactionProvider = ({ children }) => {
         }
     }
 
-    // send transactions
+    // send transactions frm one address to another
     const sendTransaction = async () => {
         try {
             if(!ethereum) return alert("You need to install MetaMask extension to continue");
@@ -94,6 +102,21 @@ export const TransactionProvider = ({ children }) => {
                     value: parsedAmount._hex
                 }]
             })
+
+            // call `transactionContract` via sol method to add the transaction to the blockchain, returns tx hash
+            const transactionHash = await transactionContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
+            
+            // set loading state
+            setIsLoading(true)
+            console.log(`Loading - ${transactionHash.hash}`);
+            await transactionHash.wait();
+
+            setIsLoading(false)
+            console.log(`Success - ${transactionHash.hash}`);
+
+            const transActionCount = await transactionContract.getTransactionCount();
+            setTransactionCount(transActionCount.toNumber())
+
         } catch (error) {
             console.log(error)
             throw new Error("No Ethereum Object found")

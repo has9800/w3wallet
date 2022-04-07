@@ -95,7 +95,7 @@ const Welcome = () => {
                                 <p className="text-black font-medium text-sm">
                                     0xajknsxc...ds394jk
                                 </p>
-                                <p className="text-black font-light text-lg my-1">
+                                <p className="text-black font-semibold text-lg my-1">
                                     Ethereum
                                 </p>
                             </div>
