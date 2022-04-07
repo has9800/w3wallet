@@ -42,7 +42,7 @@ const TransactionCard = ({
                         >
                             <p className="text-white text-base font-bold">To: <span className="font-thin">{shortenAddress(addressTo)}</span></p>
                         </a>
-                        <p className="text-white text-base">Amount: <span className="font-thin">{amount}</span></p>
+                        <p className="text-white text-base font-bold">Amount: <span className="font-thin">{amount}</span></p>
                         {message && (
                             <>
                                 <br />
@@ -51,8 +51,8 @@ const TransactionCard = ({
                         )}
                     </div>
                     <img src={gifUrl || url} alt="gif" className="w-full h-64 2xl:h-96 rounded-md shadow-lg object-cover" />
-                        <div className="bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl">
-                            <p className="text-white font-bold">{timestamp}</p>
+                        <div className="bg-[#0f0e13] p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl">
+                            <p className="text-white text-sm font-bold">{timestamp}</p>
                         </div>
                 </div>
             </div>
