@@ -2,10 +2,17 @@ import { useEffect, useState, createContext } from "react";
 import { ethers } from 'ethers';
 import { contractAbi, contractAddress } from '../utils/constants';
 
+
+
 export const TransactionContext = createContext();
+
+
+
 
 // ethereum window object provided by MetaMask in browser
 const { ethereum } = window;
+
+
 
 // use ABI and deployed smrt contract address to init app on client
 const getEthereumContract = () => {
@@ -16,6 +23,12 @@ const getEthereumContract = () => {
     // return transaction contract to use for sending currency
     return transactionContract;
 }
+
+
+
+
+
+
 
 // context provider
 export const TransactionProvider = ({ children }) => {
@@ -40,10 +53,16 @@ export const TransactionProvider = ({ children }) => {
     // transaction list to use in TransactionCard to list
     const [transactions, setTransactions] = useState([]);
 
+
     // handle form inputs to dynamically change state
     const handleChange = (e, name) => {
         setFormData((prevState) => ({...prevState, [name]: e.target.value}))
     }
+
+
+
+
+
 
     const getAllTransactions = async () => {
         try {
@@ -69,11 +88,17 @@ export const TransactionProvider = ({ children }) => {
         }
     }
  
+
+
+
+
+
+
     // check if ethereum obj provided by MetaMask is present
     const isWalletConnected = async () => {
         try {
             if(!ethereum) return alert("Please install MetaMask extension to connect to the Ethereum Blockchain and send transcactions. Close this pop-up to continue");
-            const accounts = await ethereum.request({method: 'eth_accounts'});
+            const accounts = await ethereum.request({method: 'eth_accounts'}); // RPC method call, returns promise that resolves to result of RPC call
     
             // if account is present, set `currentAccount` state
             if(accounts.length) {
@@ -89,6 +114,11 @@ export const TransactionProvider = ({ children }) => {
         }
     }
 
+
+
+
+
+
     // check if transactions exist
     const existingTransactions = async () => {
         try {
@@ -101,11 +131,17 @@ export const TransactionProvider = ({ children }) => {
         }
     }
 
+
+
+
+
+
+
     // button functionality to connect to MetaMask extension
     const connectWallet = async () => {
         try {
             if(!ethereum) return alert("You need to install MetaMask extension to continue");
-            const accounts = await ethereum.request({method: 'eth_requestAccounts'});
+            const accounts = await ethereum.request({method: 'eth_requestAccounts'}); // RPC method call, returns promise that resolves tor result of RPC call
 
             // set current account to first in arr returned by MetaMask
             setCurrentAccount(accounts[0])
@@ -115,6 +151,12 @@ export const TransactionProvider = ({ children }) => {
             throw new Error("No Ethereum Object found")
         }
     }
+
+
+
+
+
+
 
     // send transactions frm one address to another
     const sendTransaction = async () => {
@@ -132,7 +174,7 @@ export const TransactionProvider = ({ children }) => {
 
 
             // send eth on blockchain here ->
-            await ethereum.request({
+            await ethereum.request({ // RPC method call, returns promise that resolves tor result of RPC call
                 method: 'eth_sendTransaction',
                 params: [{
                     from: currentAccount,
@@ -164,11 +206,22 @@ export const TransactionProvider = ({ children }) => {
         }
     }
 
+
+
+
+
+
     // call isWalletConnected function onMount
     useEffect(() => {
         isWalletConnected();
         existingTransactions();
-    }, [])
+        connectWallet() // runs when currentAccount is changed to call MM extension and show transactions
+    }, [currentAccount])
+
+
+
+
+
 
     return (
         <TransactionContext.Provider value={{ 
@@ -185,3 +238,18 @@ export const TransactionProvider = ({ children }) => {
         </TransactionContext.Provider>
     );
 }
+
+
+/*
+
+- getEthereumContract:
+
+- getAllTransactions:
+
+
+- isWalletConnected
+- existingTransactions
+- connectWallet
+- sendTransaction
+
+*/
